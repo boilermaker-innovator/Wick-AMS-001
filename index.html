@@ -585,16 +585,24 @@ ${phone}
 Generated via Alliance AMS Quote Request System`;
 
 ```
-        // Create mailto link
-        const subject = encodeURIComponent(`Quote Request - ${urgencyText} - ${company}`);
-        const body = encodeURIComponent(emailContent);
-        const mailtoLink = `mailto:gavin@allianceams.com.au?subject=${subject}&body=${body}`;
-        
-        // Open email client
-        window.location.href = mailtoLink;
-        
-        // Show success message
-        alert('Opening your email client with the quote request...\n\nIf it doesn\'t open automatically, copy the details and email them to gavin@allianceams.com.au');
+        // Show the email content in a popup instead of trying to open email client
+        alert(`HERE'S THE PROFESSIONAL EMAIL THAT GETS GENERATED FOR GAVIN:
+```
+
+${emailContent}
+
+This organized email replaces messy customer requests and saves Gavin tons of time!`);
+
+```
+        // Also try to open email client as backup
+        try {
+            const subject = encodeURIComponent(`Quote Request - ${urgencyText} - ${company}`);
+            const body = encodeURIComponent(emailContent);
+            const mailtoLink = `mailto:gavin@allianceams.com.au?subject=${subject}&body=${body}`;
+            window.location.href = mailtoLink;
+        } catch (e) {
+            console.log('Email client not available');
+        }
     }
     
     // Add enter key support for part search
@@ -653,7 +661,6 @@ Generated via Alliance AMS Quote Request System`;
         }, 500);
     };
 </script>
-```
 
 </body>
 </html>
