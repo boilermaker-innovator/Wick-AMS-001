@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alliance AMS Quote Request</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+```
+    body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+        padding: 20px;
+    }
+    
+    .container {
+        max-width: 900px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+    
+    .header {
+        background: linear-gradient(135deg, #0066CC 0%, #004499 100%);
+        color: white;
+        padding: 30px;
+        text-align: center;
+    }
+    
+    .header h1 {
+        font-size: 2rem;
+        margin-bottom: 10px;
+        font-weight: bold;
+    }
+    
+    .header p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+    
+    .form-content {
+        padding: 40px;
+    }
+    
+    .section {
+        margin-bottom: 30px;
+        padding: 25px;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        background: #f8f9fa;
+    }
+    
+    .section-title {
+        font-size: 1.3rem;
+        color: #0066CC;
+        margin-bottom: 20px;
+        font-weight: bold;
+        border-bottom: 2px solid #0066CC;
+        padding-bottom: 8px;
+    }
+    
+    .form-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .form-field {
+        flex: 1;
+        min-width: 200px;
+    }
+    
+    .form-field.full-width {
+        flex: 100%;
+    }
+    
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #2c3e50;
+    }
+    
+    input, select, textarea {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #dee2e6;
+        border-radius: 6px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+    }
+    
+    input:focus, select:focus, textarea:focus {
+        outline: none;
+        border-color: #0066CC;
+        box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+    }
+    
+    .parts-section {
+        background: white;
+        border: 2px solid #0066CC;
+    }
+    
+    .part-search {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .search-input {
+        flex: 1;
+    }
+    
+    .add-part-btn {
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background 0.3s ease;
+    }
+    
+    .add-part-btn:hover {
+        background: #218838;
+    }
+    
+    .parts-list {
+        border: 2px solid #dee2e6;
+        border-radius: 6px;
+        margin-top: 20px;
+    }
+    
+    .parts-header {
+        background: #0066CC;
+        color: white;
+        padding: 12px;
+        display: grid;
+        grid-template-columns: 2fr 3fr 1fr 1fr 1fr;
+        gap: 10px;
+        font-weight: bold;
+    }
+    
+    .part-item {
+        display: grid;
+        grid-template-columns: 2fr 3fr 1fr 1fr 1fr;
+        gap: 10px;
+        padding: 12px;
+        border-bottom: 1px solid #dee2e6;
+        align-items: center;
+    }
+    
+    .part-item:nth-child(even) {
+        background: #f8f9fa;
+    }
+    
+    .remove-btn {
+        background: #dc3545;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.8rem;
+    }
+    
+    .remove-btn:hover {
+        background: #c82333;
+    }
+    
+    .supplier-tags {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+        flex-wrap: wrap;
+    }
+    
+    .supplier-tag {
+        background: #e9ecef;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        color: #495057;
+        border: 2px solid transparent;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .supplier-tag.active {
+        background: #0066CC;
+        color: white;
+        border-color: #0066CC;
+    }
+    
+    .urgency-selector {
+        display: flex;
+        gap: 15px;
+        margin-top: 10px;
+    }
+    
+    .urgency-option {
+        flex: 1;
+        text-align: center;
+        padding: 15px;
+        border: 2px solid #dee2e6;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .urgency-option.selected {
+        background: #0066CC;
+        color: white;
+        border-color: #0066CC;
+    }
+    
+    .submit-section {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        margin: 30px -40px -40px -40px;
+        padding: 30px 40px;
+        text-align: center;
+    }
+    
+    .submit-btn {
+        background: white;
+        color: #28a745;
+        border: none;
+        padding: 15px 40px;
+        border-radius: 8px;
+        font-size: 1.2rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+    
+    .quote-preview {
+        background: white;
+        border: 2px solid #0066CC;
+        border-radius: 8px;
+        padding: 20px;
+        margin-top: 20px;
+        display: none;
+    }
+    
+    .preview-header {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #0066CC;
+    }
+    
+    @media (max-width: 768px) {
+        .form-group {
+            flex-direction: column;
+        }
+        
+        .parts-header, .part-item {
+            grid-template-columns: 1fr;
+            text-align: center;
+        }
+        
+        .urgency-selector {
+            flex-direction: column;
+        }
+    }
+</style>
+```
+
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Alliance AMS Quote Request</h1>
+            <p>Perth's trusted automotive parts supplier - servicing mining, fleet & workshop customers</p>
+        </div>
+
+```
+    <div class="form-content">
+        <!-- Customer Information -->
+        <div class="section">
+            <div class="section-title">Customer Information</div>
+            <div class="form-group">
+                <div class="form-field">
+                    <label for="company">Company Name *</label>
+                    <input type="text" id="company" required placeholder="Mining Logistics WA">
+                </div>
+                <div class="form-field">
+                    <label for="contact">Contact Person *</label>
+                    <input type="text" id="contact" required placeholder="Mark Stevens">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="form-field">
+                    <label for="email">Email Address *</label>
+                    <input type="email" id="email" required placeholder="maintenance@mining-logistics.com.au">
+                </div>
+                <div class="form-field">
+                    <label for="phone">Phone Number *</label>
+                    <input type="tel" id="phone" required placeholder="0408 555 789">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="form-field full-width">
+                    <label for="address">Delivery Address</label>
+                    <input type="text" id="address" placeholder="48 Kelvin Rd, Maddington WA 6109">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Vehicle Information -->
+        <div class="section">
+            <div class="section-title">Vehicle Information</div>
+            <div class="form-group">
+                <div class="form-field">
+                    <label for="year">Year *</label>
+                    <input type="number" id="year" required placeholder="2019" min="1990" max="2025">
+                </div>
+                <div class="form-field">
+                    <label for="make">Make *</label>
+                    <select id="make" required>
+                        <option value="">Select Make</option>
+                        <option value="Toyota">Toyota</option>
+                        <option value="Ford">Ford</option>
+                        <option value="Holden">Holden</option>
+                        <option value="Mitsubishi">Mitsubishi</option>
+                        <option value="Nissan">Nissan</option>
+                        <option value="Mazda">Mazda</option>
+                        <option value="Isuzu">Isuzu</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label for="model">Model *</label>
+                    <input type="text" id="model" required placeholder="Hilux">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="form-field">
+                    <label for="engine">Engine Size</label>
+                    <input type="text" id="engine" placeholder="2.8L Diesel">
+                </div>
+                <div class="form-field">
+                    <label for="vin">VIN/Chassis Number</label>
+                    <input type="text" id="vin" placeholder="Optional - helps with exact part matching">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Parts Request -->
+        <div class="section parts-section">
+            <div class="section-title">Parts Required</div>
+            
+            <div class="part-search">
+                <input type="text" class="search-input" id="partSearch" placeholder="Enter part name, number, or description (e.g. brake pads, 04465-60050)">
+                <button type="button" class="add-part-btn" onclick="addPart()">Add Part</button>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <strong>Preferred Suppliers:</strong>
+                <div class="supplier-tags">
+                    <div class="supplier-tag active" onclick="toggleSupplier(this)">Any Supplier</div>
+                    <div class="supplier-tag" onclick="toggleSupplier(this)">Toyota Genuine</div>
+                    <div class="supplier-tag" onclick="toggleSupplier(this)">NAPA</div>
+                    <div class="supplier-tag" onclick="toggleSupplier(this)">Burson</div>
+                    <div class="supplier-tag" onclick="toggleSupplier(this)">Repco</div>
+                </div>
+            </div>
+            
+            <div class="parts-list">
+                <div class="parts-header">
+                    <div>Part Description</div>
+                    <div>Notes/Specifications</div>
+                    <div>Qty</div>
+                    <div>Supplier</div>
+                    <div>Action</div>
+                </div>
+                <div id="partsList">
+                    <!-- Parts will be added here -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quote Requirements -->
+        <div class="section">
+            <div class="section-title">Quote Requirements</div>
+            
+            <div class="form-group">
+                <div class="form-field full-width">
+                    <label>How urgent is this quote? *</label>
+                    <div class="urgency-selector">
+                        <div class="urgency-option" onclick="selectUrgency(this, 'standard')">
+                            <strong>Standard</strong><br>
+                            <small>3-5 business days</small>
+                        </div>
+                        <div class="urgency-option" onclick="selectUrgency(this, 'urgent')">
+                            <strong>Urgent</strong><br>
+                            <small>Same/next day</small>
+                        </div>
+                        <div class="urgency-option selected" onclick="selectUrgency(this, 'emergency')">
+                            <strong>Emergency</strong><br>
+                            <small>ASAP - Equipment down</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <div class="form-field full-width">
+                    <label for="additional">Additional Information</label>
+                    <textarea id="additional" rows="4" placeholder="Any specific requirements, alternative parts needed, delivery instructions, etc."></textarea>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Submit Section -->
+        <div class="submit-section">
+            <h3 style="color: white; margin-bottom: 15px;">Ready to Get Your Quote?</h3>
+            <p style="color: white; margin-bottom: 20px; opacity: 0.9;">
+                Gavin will review your request and email back a professional quote with pricing and availability
+            </p>
+            <button type="button" class="submit-btn" onclick="generateQuote()">
+                📧 Send Quote Request to Alliance AMS
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Quote Preview Modal -->
+<div id="quotePreview" class="quote-preview">
+    <div class="preview-header">
+        <h3>Quote Request Preview</h3>
+    </div>
+    <div id="previewContent"></div>
+</div>
+
+<script>
+    let partCounter = 0;
+    let selectedUrgency = 'emergency';
+    
+    function addPart() {
+        const partInput = document.getElementById('partSearch');
+        const partDescription = partInput.value.trim();
+        
+        if (!partDescription) {
+            alert('Please enter a part description');
+            return;
+        }
+        
+        const activeSupplier = document.querySelector('.supplier-tag.active').textContent;
+        
+        partCounter++;
+        const partsList = document.getElementById('partsList');
+        
+        const partRow = document.createElement('div');
+        partRow.className = 'part-item';
+        partRow.innerHTML = `
+            <div>${partDescription}</div>
+            <div><input type="text" placeholder="Ceramic preferred, heavy duty, etc." style="width: 100%; border: 1px solid #ddd; padding: 5px;"></div>
+            <div><input type="number" value="1" min="1" style="width: 60px; border: 1px solid #ddd; padding: 5px;"></div>
+            <div>${activeSupplier}</div>
+            <div><button class="remove-btn" onclick="removePart(this)">Remove</button></div>
+        `;
+        
+        partsList.appendChild(partRow);
+        partInput.value = '';
+    }
+    
+    function removePart(button) {
+        button.closest('.part-item').remove();
+    }
+    
+    function toggleSupplier(element) {
+        document.querySelectorAll('.supplier-tag').forEach(tag => tag.classList.remove('active'));
+        element.classList.add('active');
+    }
+    
+    function selectUrgency(element, urgency) {
+        document.querySelectorAll('.urgency-option').forEach(option => option.classList.remove('selected'));
+        element.classList.add('selected');
+        selectedUrgency = urgency;
+    }
+    
+    function generateQuote() {
+        // Collect all form data
+        const company = document.getElementById('company').value;
+        const contact = document.getElementById('contact').value;
+        const email = document.getElementById('email').value;
+        const phone = document.getElementById('phone').value;
+        const year = document.getElementById('year').value;
+        const make = document.getElementById('make').value;
+        const model = document.getElementById('model').value;
+        const engine = document.getElementById('engine').value;
+        
+        // Validate required fields
+        if (!company || !contact || !email || !phone || !year || !make || !model) {
+            alert('Please fill in all required fields marked with *');
+            return;
+        }
+        
+        // Collect parts
+        const parts = [];
+        document.querySelectorAll('#partsList .part-item').forEach(item => {
+            const cells = item.children;
+            parts.push({
+                description: cells[0].textContent,
+                notes: cells[1].querySelector('input').value,
+                quantity: cells[2].querySelector('input').value,
+                supplier: cells[3].textContent
+            });
+        });
+        
+        if (parts.length === 0) {
+            alert('Please add at least one part to your quote request');
+            return;
+        }
+        
+        // Generate email content
+        const additional = document.getElementById('additional').value;
+        const urgencyText = selectedUrgency === 'emergency' ? 'URGENT - Equipment Down' : 
+                           selectedUrgency === 'urgent' ? 'Urgent - Same/Next Day' : 'Standard Timing';
+        
+        let emailContent = `Subject: Quote Request - ${urgencyText} - ${company}
+```
+
+Hi Gavin,
+
+Please provide a quote for the following parts:
+
+CUSTOMER DETAILS:
+Company: ${company}
+Contact: ${contact}
+Email: ${email}
+Phone: ${phone}
+Delivery: ${document.getElementById(‘address’).value || ‘TBC’}
+
+VEHICLE DETAILS:
+${year} ${make} ${model}
+Engine: ${engine || ‘Not specified’}
+VIN: ${document.getElementById(‘vin’).value || ‘Not provided’}
+
+PARTS REQUIRED:
+`;
+
+```
+        parts.forEach((part, index) => {
+            emailContent += `${index + 1}. ${part.description}`;
+            if (part.notes) emailContent += ` (${part.notes})`;
+            emailContent += ` - Qty: ${part.quantity}`;
+            if (part.supplier !== 'Any Supplier') emailContent += ` - Prefer: ${part.supplier}`;
+            emailContent += '\n';
+        });
+        
+        emailContent += `
+```
+
+REQUIREMENTS:
+Priority: ${urgencyText}
+${additional ? ’Additional Notes: ’ + additional : ‘’}
+
+Please email quote to: ${email}
+
+Thanks,
+${contact}
+${company}
+${phone}
+
+-----
+
+Generated via Alliance AMS Quote Request System`;
+
+```
+        // Create mailto link
+        const subject = encodeURIComponent(`Quote Request - ${urgencyText} - ${company}`);
+        const body = encodeURIComponent(emailContent);
+        const mailtoLink = `mailto:gavin@allianceams.com.au?subject=${subject}&body=${body}`;
+        
+        // Open email client
+        window.location.href = mailtoLink;
+        
+        // Show success message
+        alert('Opening your email client with the quote request...\n\nIf it doesn\'t open automatically, copy the details and email them to gavin@allianceams.com.au');
+    }
+    
+    // Add enter key support for part search
+    document.getElementById('partSearch').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            addPart();
+        }
+    });
+    
+    // Add some sample parts for demonstration
+    window.onload = function() {
+        // Auto-fill all sample data for demonstration
+        document.getElementById('company').value = 'Mining Logistics WA';
+        document.getElementById('contact').value = 'Mark Stevens';
+        document.getElementById('email').value = 'maintenance@mining-logistics.com.au';
+        document.getElementById('phone').value = '0408 555 789';
+        document.getElementById('address').value = '48 Kelvin Rd, Maddington WA 6109';
+        document.getElementById('year').value = '2019';
+        document.getElementById('make').value = 'Toyota';
+        document.getElementById('model').value = 'Hilux';
+        document.getElementById('engine').value = '2.8L Diesel';
+        document.getElementById('vin').value = 'JTFHU4E26JG123456';
+        document.getElementById('additional').value = 'Vehicle is used for mine site operations - need heavy duty parts. Urgent repair needed as truck is currently down affecting mine operations.';
+        
+        // Add sample parts
+        setTimeout(() => {
+            // Add brake pads
+            document.getElementById('partSearch').value = 'Front brake pads (ceramic)';
+            addPart();
+            
+            // Add brake rotors
+            document.getElementById('partSearch').value = 'Front brake rotors (pair)';
+            toggleSupplier(document.querySelectorAll('.supplier-tag')[1]); // Select Toyota
+            addPart();
+            
+            // Add brake fluid
+            document.getElementById('partSearch').value = 'DOT 4 brake fluid 4L';
+            toggleSupplier(document.querySelectorAll('.supplier-tag')[2]); // Select NAPA
+            addPart();
+            
+            // Add air filter
+            document.getElementById('partSearch').value = 'Engine air filter';
+            toggleSupplier(document.querySelectorAll('.supplier-tag')[0]); // Back to Any Supplier
+            addPart();
+            
+            // Fill in the notes for each part
+            const partItems = document.querySelectorAll('#partsList .part-item');
+            if (partItems[0]) partItems[0].children[1].querySelector('input').value = 'Heavy duty ceramic, mine site application';
+            if (partItems[1]) partItems[1].children[1].querySelector('input').value = 'OEM quality, ventilated preferred';
+            if (partItems[2]) partItems[2].children[1].querySelector('input').value = 'Premium grade for extreme conditions';
+            if (partItems[3]) {
+                partItems[3].children[1].querySelector('input').value = 'High flow for dusty conditions';
+                partItems[3].children[2].querySelector('input').value = '2'; // Quantity 2
+            }
+            
+        }, 500);
+    };
+</script>
+```
+
+</body>
+</html>
