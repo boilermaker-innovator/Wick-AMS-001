@@ -366,6 +366,32 @@
         <div class="section parts-section">
             <div class="section-title">Parts Required</div>
             
+            <!-- Bulk Order Entry -->
+            <div style="margin-bottom: 25px; padding: 20px; background: #e8f5e9; border-radius: 8px; border: 2px solid #28a745;">
+                <h4 style="color: #155724; margin-bottom: 15px;">📋 Bulk Order Entry (Optional)</h4>
+                <p style="margin-bottom: 10px; color: #495057;">Got a long parts list? Paste it here and we'll organize it for you:</p>
+                <textarea id="bulkOrderText" placeholder="Paste your parts list here... Examples:
+```
+
+• Front brake pads x2
+• Brake rotors (pair)
+• Engine oil filter - Toyota 04152-YZZA1
+• DOT 4 brake fluid 4L
+• Air filter heavy duty
+
+Or copy from emails, existing orders, service schedules, etc.” style=“width: 100%; height: 120px; padding: 12px; border: 2px solid #28a745; border-radius: 6px; font-family: monospace;”></textarea>
+<button type="button" onclick="parseBulkOrder()" style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 10px;">
+🔄 Parse Parts List
+</button>
+<small style="display: block; margin-top: 8px; color: #666;">This will automatically add parts to your quote request below</small>
+</div>
+
+```
+            <!-- Individual Part Entry -->
+            <div style="margin-bottom: 15px;">
+                <h4 style="color: #0066CC; margin-bottom: 10px;">➕ Add Individual Parts</h4>
+            </div>
+            
             <div class="part-search">
                 <input type="text" class="search-input" id="partSearch" placeholder="Enter part name, number, or description (e.g. brake pads, 04465-60050)">
                 <button type="button" class="add-part-btn" onclick="addPart()">Add Part</button>
@@ -428,6 +454,16 @@
             </div>
         </div>
         
+        <!-- Quote Preview Section -->
+        <div class="section">
+            <div class="section-title">📧 Email Preview</div>
+            <p style="margin-bottom: 15px; color: #666;">See exactly what professional email will be sent to Gavin:</p>
+            <textarea id="emailPreview" readonly style="background: #f8f9fa; border: 2px solid #0066CC; min-height: 300px; font-family: monospace; font-size: 0.9rem; color: #2c3e50;" placeholder="Fill out the form above and your professional email will appear here..."></textarea>
+            <div style="margin-top: 15px; padding: 15px; background: #e8f5e9; border-radius: 6px; border-left: 4px solid #28a745;">
+                <strong>✅ What this replaces:</strong> Instead of messy customer emails like "hi need brakes urgent plz", Gavin gets organized professional requests with all the details he needs.
+            </div>
+        </div>
+
         <!-- Submit Section -->
         <div class="submit-section">
             <h3 style="color: white; margin-bottom: 15px;">Ready to Get Your Quote?</h3>
@@ -453,6 +489,89 @@
     let partCounter = 0;
     let selectedUrgency = 'emergency';
     
+    function parseBulkOrder() {
+        const bulkText = document.getElementById('bulkOrderText').value.trim();
+        
+        if (!bulkText) {
+            alert('Please paste your parts list in the text box first');
+            return;
+        }
+        
+        // Split text into lines and process each line
+        const lines = bulkText.split('\n');
+        let addedParts = 0;
+        
+        lines.forEach(line => {
+            line = line.trim();
+            if (line && line.length > 2) {
+                // Clean up common formatting
+                line = line.replace(/^[•\-\*\d+\.\)\(]+\s*/, ''); // Remove bullets, numbers, etc.
+                
+                // Try to extract quantity
+                let quantity = 1;
+                let description = line;
+                
+                // Look for quantity patterns like "x2", "qty 3", "2x", etc.
+                const qtyPatterns = [
+                    /\s*x\s*(\d+)/i,
+                    /\s*qty\s*:?\s*(\d+)/i,
+                    /\s*(\d+)\s*x\s*/i,
+                    /\s*quantity\s*:?\s*(\d+)/i,
+                    /\s*\((\d+)\)/
+                ];
+                
+                for (let pattern of qtyPatterns) {
+                    const match = line.match(pattern);
+                    if (match) {
+                        quantity = parseInt(match[1]);
+                        description = line.replace(pattern, '').trim();
+                        break;
+                    }
+                }
+                
+                // Add the part
+                if (description && description.length > 2) {
+                    addPartToList(description, quantity);
+                    addedParts++;
+                }
+            }
+        });
+        
+        if (addedParts > 0) {
+            alert(`✅ Successfully added ${addedParts} parts to your quote request!`);
+            document.getElementById('bulkOrderText').value = ''; // Clear the text box
+            updatePreview();
+        } else {
+            alert('Could not parse any parts from the text. Please check the format and try again.');
+        }
+    }
+    
+    function addPartToList(description, quantity = 1) {
+        const activeSupplier = document.querySelector('.supplier-tag.active').textContent;
+        
+        partCounter++;
+        const partsList = document.getElementById('partsList');
+        
+        const partRow = document.createElement('div');
+        partRow.className = 'part-item';
+        partRow.innerHTML = `
+            <div>${description}</div>
+            <div><input type="text" placeholder="Add specifications..." style="width: 100%; border: 1px solid #ddd; padding: 5px;" oninput="updatePreview()"></div>
+            <div><input type="number" value="${quantity}" min="1" style="width: 60px; border: 1px solid #ddd; padding: 5px;" oninput="updatePreview()"></div>
+            <div>${activeSupplier}</div>
+            <div><button class="remove-btn" onclick="removePart(this)">Remove</button></div>
+        `;
+        
+        partsList.appendChild(partRow);
+    }
+    function addEventListeners() {
+        // Update preview when any input changes
+        document.querySelectorAll('input, select, textarea').forEach(element => {
+            element.addEventListener('input', updatePreview);
+            element.addEventListener('change', updatePreview);
+        });
+    }
+    
     function addPart() {
         const partInput = document.getElementById('partSearch');
         const partDescription = partInput.value.trim();
@@ -462,27 +581,14 @@
             return;
         }
         
-        const activeSupplier = document.querySelector('.supplier-tag.active').textContent;
-        
-        partCounter++;
-        const partsList = document.getElementById('partsList');
-        
-        const partRow = document.createElement('div');
-        partRow.className = 'part-item';
-        partRow.innerHTML = `
-            <div>${partDescription}</div>
-            <div><input type="text" placeholder="Ceramic preferred, heavy duty, etc." style="width: 100%; border: 1px solid #ddd; padding: 5px;"></div>
-            <div><input type="number" value="1" min="1" style="width: 60px; border: 1px solid #ddd; padding: 5px;"></div>
-            <div>${activeSupplier}</div>
-            <div><button class="remove-btn" onclick="removePart(this)">Remove</button></div>
-        `;
-        
-        partsList.appendChild(partRow);
+        addPartToList(partDescription, 1);
         partInput.value = '';
+        updatePreview();
     }
     
     function removePart(button) {
         button.closest('.part-item').remove();
+        updatePreview(); // Update preview when part is removed
     }
     
     function toggleSupplier(element) {
@@ -494,10 +600,10 @@
         document.querySelectorAll('.urgency-option').forEach(option => option.classList.remove('selected'));
         element.classList.add('selected');
         selectedUrgency = urgency;
+        updatePreview(); // Update preview when urgency changes
     }
     
-    function generateQuote() {
-        // Collect all form data
+    function updatePreview() {
         const company = document.getElementById('company').value;
         const contact = document.getElementById('contact').value;
         const email = document.getElementById('email').value;
@@ -506,12 +612,6 @@
         const make = document.getElementById('make').value;
         const model = document.getElementById('model').value;
         const engine = document.getElementById('engine').value;
-        
-        // Validate required fields
-        if (!company || !contact || !email || !phone || !year || !make || !model) {
-            alert('Please fill in all required fields marked with *');
-            return;
-        }
         
         // Collect parts
         const parts = [];
@@ -525,17 +625,12 @@
             });
         });
         
-        if (parts.length === 0) {
-            alert('Please add at least one part to your quote request');
-            return;
-        }
-        
-        // Generate email content
+        // Generate preview content
         const additional = document.getElementById('additional').value;
         const urgencyText = selectedUrgency === 'emergency' ? 'URGENT - Equipment Down' : 
                            selectedUrgency === 'urgent' ? 'Urgent - Same/Next Day' : 'Standard Timing';
         
-        let emailContent = `Subject: Quote Request - ${urgencyText} - ${company}
+        let emailContent = `Subject: Quote Request - ${urgencyText} - ${company || '[Company Name]'}
 ```
 
 Hi Gavin,
@@ -543,28 +638,30 @@ Hi Gavin,
 Please provide a quote for the following parts:
 
 CUSTOMER DETAILS:
-Company: ${company}
-Contact: ${contact}
-Email: ${email}
-Phone: ${phone}
+Company: ${company || ‘[Not filled]’}
+Contact: ${contact || ‘[Not filled]’}
+Email: ${email || ‘[Not filled]’}
+Phone: ${phone || ‘[Not filled]’}
 Delivery: ${document.getElementById(‘address’).value || ‘TBC’}
 
 VEHICLE DETAILS:
-${year} ${make} ${model}
+${year || ‘[Year]’} ${make || ‘[Make]’} ${model || ‘[Model]’}
 Engine: ${engine || ‘Not specified’}
 VIN: ${document.getElementById(‘vin’).value || ‘Not provided’}
 
-PARTS REQUIRED:
-`;
+PARTS REQUIRED:`;
 
 ```
-        parts.forEach((part, index) => {
-            emailContent += `${index + 1}. ${part.description}`;
-            if (part.notes) emailContent += ` (${part.notes})`;
-            emailContent += ` - Qty: ${part.quantity}`;
-            if (part.supplier !== 'Any Supplier') emailContent += ` - Prefer: ${part.supplier}`;
-            emailContent += '\n';
-        });
+        if (parts.length === 0) {
+            emailContent += '\n[No parts added yet - add parts above to see them here]';
+        } else {
+            parts.forEach((part, index) => {
+                emailContent += `\n${index + 1}. ${part.description}`;
+                if (part.notes) emailContent += ` (${part.notes})`;
+                emailContent += ` - Qty: ${part.quantity}`;
+                if (part.supplier !== 'Any Supplier') emailContent += ` - Prefer: ${part.supplier}`;
+            });
+        }
         
         emailContent += `
 ```
@@ -573,29 +670,47 @@ REQUIREMENTS:
 Priority: ${urgencyText}
 ${additional ? ’Additional Notes: ’ + additional : ‘’}
 
-Please email quote to: ${email}
+Please email quote to: ${email || ‘[Customer Email]’}
 
 Thanks,
-${contact}
-${company}
-${phone}
+${contact || ‘[Contact Name]’}
+${company || ‘[Company Name]’}
+${phone || ‘[Phone Number]’}
 
 -----
 
 Generated via Alliance AMS Quote Request System`;
 
 ```
-        // Show the email content in a popup instead of trying to open email client
-        alert(`HERE'S THE PROFESSIONAL EMAIL THAT GETS GENERATED FOR GAVIN:
-```
-
-${emailContent}
-
-This organized email replaces messy customer requests and saves Gavin tons of time!`);
-
-```
+        document.getElementById('emailPreview').value = emailContent;
+    }
+    
+    function generateQuote() {
+        // First update the preview
+        updatePreview();
+        
+        // Get the preview content
+        const emailContent = document.getElementById('emailPreview').value;
+        
+        // Validate that we have some basic info
+        if (!document.getElementById('company').value || !document.getElementById('contact').value) {
+            alert('Please fill in at least the company name and contact person before generating the quote.');
+            return;
+        }
+        
+        if (document.querySelectorAll('#partsList .part-item').length === 0) {
+            alert('Please add at least one part to your quote request.');
+            return;
+        }
+        
+        // Show the email content in a popup
+        alert(`PROFESSIONAL EMAIL GENERATED!\n\nThis organized email will be sent to Gavin instead of a messy customer request:\n\n${emailContent}`);
+        
         // Also try to open email client as backup
         try {
+            const company = document.getElementById('company').value;
+            const urgencyText = selectedUrgency === 'emergency' ? 'URGENT - Equipment Down' : 
+                               selectedUrgency === 'urgent' ? 'Urgent - Same/Next Day' : 'Standard Timing';
             const subject = encodeURIComponent(`Quote Request - ${urgencyText} - ${company}`);
             const body = encodeURIComponent(emailContent);
             const mailtoLink = `mailto:gavin@allianceams.com.au?subject=${subject}&body=${body}`;
@@ -626,6 +741,9 @@ This organized email replaces messy customer requests and saves Gavin tons of ti
         document.getElementById('engine').value = '2.8L Diesel';
         document.getElementById('vin').value = 'JTFHU4E26JG123456';
         document.getElementById('additional').value = 'Vehicle is used for mine site operations - need heavy duty parts. Urgent repair needed as truck is currently down affecting mine operations.';
+        
+        // Add event listeners for real-time preview
+        addEventListeners();
         
         // Add sample parts
         setTimeout(() => {
@@ -658,9 +776,13 @@ This organized email replaces messy customer requests and saves Gavin tons of ti
                 partItems[3].children[2].querySelector('input').value = '2'; // Quantity 2
             }
             
+            // Initial preview update
+            updatePreview();
+            
         }, 500);
     };
 </script>
+```
 
 </body>
 </html>
